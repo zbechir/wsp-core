@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-reverse-engineering-3.0.dtd" >
+
+<hibernate-reverse-engineering>
+	<table-filter match-name="AskBid" match-catalog="wsp"></table-filter>
+	<table-filter match-name="Gain" match-catalog="wsp"></table-filter>
+	<table-filter match-name="Params" match-catalog="wsp"></table-filter>
+	<table-filter match-name="SoldeSession" match-catalog="wsp"></table-filter>
+	<table-filter match-name="SuivieCapital" match-catalog="wsp"></table-filter>
+	<table-filter match-name="TradingSession" match-catalog="wsp"></table-filter>
+	<table-filter match-name="Turbo" match-catalog="wsp"></table-filter>
+	<table-filter match-name="TurboPosition" match-catalog="wsp"></table-filter>
+	<table-filter match-name="TurboPositionLogging"
+		match-catalog="wsp">
+	</table-filter>
+	<table-filter match-name="TurboPositionSimulation"
+		match-catalog="wsp">
+	</table-filter>
+	<table-filter match-name="Users" match-catalog="wsp"></table-filter>
+</hibernate-reverse-engineering>

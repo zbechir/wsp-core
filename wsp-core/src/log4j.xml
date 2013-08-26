@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	<appender name="console" class="org.apache.log4j.ConsoleAppender">
+		<param name="Target" value="System.out" />
+		<param name="Threshold" value="info" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-5p %c{1} - %m%n" />
+		</layout>
+	</appender>
+	<appender name="DB" class="org.apache.log4j.jdbc.JDBCAppender">
+		<param name="Threshold" value="info" />
+		<param name="URL" value="jdbc:mysql://wspdevdb/wsp_logs" />
+		<param name="Driver" value="com.mysql.jdbc.Driver" />
+		<param name="User" value="wsp" />
+		<param name="Password" value="86GAptWjnBQqGdw7" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="INSERT INTO Logs VALUES(NULL,'%C','%p','%t','%m','%d{yyyy-MM-dd HH:mm:ss}')" />
+		</layout>
+	</appender>
+	<appender name="Output" class="org.apache.log4j.FileAppender">
+		<param name="File" value="log/wsp.out.log" />
+		<param name="Append" value="true" />
+		<param name="Threshold" value="debug" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss} [%t]  %-5p
+%c{2} - %m%n" />
+		</layout>
+	</appender>
+	
+	<appender name="Application" class="org.apache.log4j.FileAppender">
+		<param name="File" value="log/wsp.application.log" />
+		<param name="Append" value="true" />
+		<param name="Threshold" value="debug" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss} [%t]  %-5p
+%c{2} - %m%n" />
+		</layout>
+	</appender>
+	
+	<logger name="org.wsp">
+		<level value="ALL" />
+		<appender-ref ref="Application" />
+	</logger>
+
+	<root>
+		<priority value="all" />
+		<appender-ref ref="console" />
+		<appender-ref ref="Output" />
+		<appender-ref ref="DB" />
+	</root>
+
+</log4j:configuration>
