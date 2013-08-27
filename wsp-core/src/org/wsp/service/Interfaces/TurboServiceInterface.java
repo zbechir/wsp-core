@@ -13,4 +13,5 @@ public interface TurboServiceInterface {
 	public Turbo getActivePut(TradingSession tradingSession);
 	public void toWorkMode(Turbo turbo);
 	public void init(Turbo turbo);
+	public void desactivate(Turbo turbo);
 }

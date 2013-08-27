@@ -80,4 +80,9 @@ public class TurboServiceImplements implements TurboServiceInterface {
 		dao.init(turbo);		
 	}
 
+	@Override
+	public void desactivate(Turbo turbo) {
+		dao.desactivate(turbo);		
+	}
+
 }

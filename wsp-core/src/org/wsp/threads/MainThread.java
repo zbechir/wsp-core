@@ -45,7 +45,10 @@ public class MainThread implements Runnable {
 						tradingSessionServiceInterface.work(Ts);
 					}
 				}
+				Thread.sleep(1000*60*1);
 			}
+		} catch (InterruptedException e) {
+			log.error(e.getMessage(),e);
 		} finally {
 			if (!Threads.isEmpty()) {
 				for (int i = 0; i < Threads.size(); i++) {

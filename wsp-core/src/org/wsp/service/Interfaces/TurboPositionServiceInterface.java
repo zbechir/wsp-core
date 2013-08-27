@@ -6,6 +6,6 @@ public interface TurboPositionServiceInterface {
 
 	public void add(TurboPosition turboPosition);
 
-	public void getById(Integer Id);
+	public TurboPosition getById(Integer Id);
 
 }

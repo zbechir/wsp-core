@@ -18,8 +18,8 @@ public class TurboPositionServiceImplements implements
 	}
 
 	@Override
-	public void getById(Integer Id) {
-		dao.getById(Id);
+	public TurboPosition getById(Integer Id) {
+		return dao.getById(Id);
 	}
 
 }

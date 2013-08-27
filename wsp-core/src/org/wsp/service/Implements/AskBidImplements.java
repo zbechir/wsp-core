@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.wsp.dao.AskBidDAO;
 import org.wsp.models.AskBid;
+import org.wsp.models.Turbo;
 import org.wsp.service.Interfaces.AskBidServiceInterface;
 
 @Service(value = "AskBid")
@@ -74,5 +75,11 @@ public class AskBidImplements implements AskBidServiceInterface {
 		dao.Remove(askBid);
 
 	}
+
+	@Override
+	public AskBid getLstByTurbo(Turbo turbo) {
+		return dao.getLastByTurbo(turbo);
+	}
+	
 
 }

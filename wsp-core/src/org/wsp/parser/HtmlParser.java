@@ -13,13 +13,18 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationContext;
 import org.wsp.models.Turbo;
 import org.wsp.models.TurboPosition;
+import org.wsp.service.Interfaces.TurboPositionServiceInterface;
+import org.wsp.service.Interfaces.TurboServiceInterface;
 
 public class HtmlParser {
 	private static final Logger log = Logger.getLogger(HtmlParser.class);
 	private String Url;
 	private Turbo turbo;
+	private ApplicationContext context;
+	private TurboServiceInterface turboServiceInterface;
 
 	public HtmlParser(String url) {
 		super();
@@ -30,10 +35,13 @@ public class HtmlParser {
 		super();
 	}
 
-	public HtmlParser(Turbo turbo) {
+	public HtmlParser(Turbo turbo, ApplicationContext context) {
 		super();
 		Url = turbo.getUrl();
 		this.turbo = turbo;
+		this.context = context;
+		turboServiceInterface = (TurboServiceInterface) context
+				.getBean("Turbo");
 	}
 
 	private List<String> ParsingTurbo() {
@@ -50,10 +58,9 @@ public class HtmlParser {
 		htmls = html.split("\n");
 		Size = htmls.length;
 		if (Size > 360) {
-			log.debug("Page Content : " + html);
 			for (int j = 0; j < htmls.length; j++) {
 				HtmlEx.add(j, htmls[j]);
-				log.debug(j + "**" + htmls[j]);
+				log.trace(j + "**" + htmls[j]);
 			}
 
 		} else {
@@ -67,7 +74,7 @@ public class HtmlParser {
 		Float Index = new Float(0);
 		List<String> HtmlEx = ParsingTurbo();
 		try {
-			if (HtmlEx == null) {
+			if (HtmlEx == null || HtmlEx.isEmpty()) {
 				return null;
 			}
 			if (HtmlEx.indexOf("Direct Emetteurs Temps réel") == -1) {
@@ -91,22 +98,22 @@ public class HtmlParser {
 			float Vente = 0;
 			if (HtmlEx.indexOf("Bid and Ask") != -1) {
 				log.info("Getting the Turbo Value from the Ask and Bid");
-
 				Qte = new Integer(HtmlEx.get(HtmlEx.indexOf("Bid and Ask") + 5)
 						.replaceAll(" ", ""));
 				if (HtmlEx.get(HtmlEx.indexOf("Bid and Ask") + 6)
 						.equalsIgnoreCase("OUV")) {
 					log.error("Turbo Inactif...");
+					turboServiceInterface.desactivate(turbo);
 					return null;
 				} else {
 					Achat = new Float(
 							HtmlEx.get(HtmlEx.indexOf("Bid and Ask") + 6))
 							.floatValue();
-					log.info(Achat);
 				}
 				if (HtmlEx.get(HtmlEx.indexOf("Bid and Ask") + 9)
 						.equalsIgnoreCase("OUV")) {
 					log.error("Turbo Inactif...");
+					turboServiceInterface.desactivate(turbo);
 					return null;
 				} else {
 					Vente = new Float(
@@ -119,6 +126,7 @@ public class HtmlParser {
 				log.info("Getting The Turbo Value from the Cotations");
 				if (HtmlEx.get(HtmlEx.indexOf("Cotations") + 2).contains("c")) {
 					log.error("Turbo Closed");
+					turboServiceInterface.desactivate(turbo);
 					return null;
 				} else {
 					Achat = (float) (new Float(HtmlEx.get(
@@ -136,14 +144,14 @@ public class HtmlParser {
 			} else {
 				TurboPosition position = new TurboPosition();
 				position.setAchat(Achat);
-				//position.setTurboIdTurbo(0);
+				// position.setTurboIdTurbo(0);
 				position.setTurboIdTurbo(turbo.getIdTurbo());
 				position.setPrixSousJacent(Index);
 				position.setQte(Qte);
 				position.setCreationDate(new Date());
 				position.setTradingSessionIdTradingSession(0);
 				position.setTradingSessionIdTradingSession(turbo
-				 .getTradingSessionIdTradingSession());
+						.getTradingSessionIdTradingSession());
 				position.setVente(Vente);
 				// System.out.println(position);
 				log.info("Position Parsed : " + position);
@@ -243,7 +251,11 @@ public class HtmlParser {
 
 			// Send request
 			DataOutputStream wr = new DataOutputStream(c.getOutputStream());
-			String query = "parameters[sort]="+sort+"&parameters[nbLines]=50&parameters[ssjacentSymbol]=false&parameters[type_derive]=C&parameters[risque]=false&parameters[turbo]=true&parameters[page]=1&parameters[do_search]=1&parameters[type]="+type+"&parameters[type_ssjacent]=Indices&parameters[ssjacent]=CAC%252040&parameters[emetteur]=&parameters[status][active]=active&parameters[ssjacent-part]=&parameters[strategie]=&parameters[eligibilite]=CATS&customizing=true&id=b82e2031&config[id]=b82e2031&config[fieldsLast][0][0]=type&config[newFields][0]=type&class=Boursorama_Block_Bourse_Derives_Search_Turbos";
+			String query = "parameters[sort]="
+					+ sort
+					+ "&parameters[nbLines]=50&parameters[ssjacentSymbol]=false&parameters[type_derive]=C&parameters[risque]=false&parameters[turbo]=true&parameters[page]=1&parameters[do_search]=1&parameters[type]="
+					+ type
+					+ "&parameters[type_ssjacent]=Indices&parameters[ssjacent]=CAC%252040&parameters[emetteur]=&parameters[status][active]=active&parameters[ssjacent-part]=&parameters[strategie]=&parameters[eligibilite]=CATS&customizing=true&id=b82e2031&config[id]=b82e2031&config[fieldsLast][0][0]=type&config[newFields][0]=type&class=Boursorama_Block_Bourse_Derives_Search_Turbos";
 			wr.writeBytes(query);
 			wr.flush();
 			wr.close();
