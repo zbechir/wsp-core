@@ -76,7 +76,7 @@ public class TradingSessionThreads implements Runnable {
 								}else{
 									log.error("Problem in parsing Turbos");
 								}
-								Thread.sleep(1000 * 15 * 1);
+								//Thread.sleep(1000 * 15 * 1);
 							} else {
 								SimpleDateFormat Sdf = new SimpleDateFormat(
 										"HH:mm:ss");
