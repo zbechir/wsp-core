@@ -34,4 +34,9 @@ public class TradingSessionServiceImplements implements
 		return dao.ListWorking();
 	}
 
+	@Override
+	public TradingSession getById(Integer Id) {
+		return dao.getById(Id);
+	}
+
 }

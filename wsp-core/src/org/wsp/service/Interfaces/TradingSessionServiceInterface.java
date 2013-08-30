@@ -13,4 +13,5 @@ public interface TradingSessionServiceInterface {
 	public List<TradingSession> getActive();
 	
 	public List<TradingSession> getworking();
+	public TradingSession getById(Integer Id);
 }

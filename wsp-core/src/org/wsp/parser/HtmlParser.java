@@ -149,7 +149,7 @@ public class HtmlParser {
 				position.setPrixSousJacent(Index);
 				position.setQte(Qte);
 				position.setCreationDate(new Date());
-				position.setTradingSessionIdTradingSession(0);
+				//position.setTradingSessionIdTradingSession(0);
 				position.setTradingSessionIdTradingSession(turbo
 						.getTradingSessionIdTradingSession());
 				position.setVente(Vente);
