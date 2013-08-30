@@ -14,4 +14,5 @@ public interface TurboServiceInterface {
 	public void toWorkMode(Turbo turbo);
 	public void init(Turbo turbo);
 	public void desactivate(Turbo turbo);
+	public Turbo getById(Integer Id);
 }

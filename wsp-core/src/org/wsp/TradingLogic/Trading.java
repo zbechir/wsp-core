@@ -4,6 +4,9 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
+import org.wsp.models.AskBid;
+import org.wsp.models.SoldeSession;
+import org.wsp.models.SuivieCapital;
 import org.wsp.models.TradingSession;
 import org.wsp.models.Turbo;
 import org.wsp.models.TurboPosition;
@@ -12,8 +15,10 @@ import org.wsp.models.TurboPositionSimulation;
 import org.wsp.service.Interfaces.AskBidServiceInterface;
 import org.wsp.service.Interfaces.ParamsServiceInterface;
 import org.wsp.service.Interfaces.SoldeSessionServiceInterface;
+import org.wsp.service.Interfaces.SuivieCapitalServiceInterface;
 import org.wsp.service.Interfaces.TradingSessionServiceInterface;
 import org.wsp.service.Interfaces.TurboPositionServiceInterface;
+import org.wsp.service.Interfaces.TurboServiceInterface;
 
 public class Trading {
 
@@ -28,6 +33,8 @@ public class Trading {
 	private ParamsServiceInterface paramsServiceInterface;
 	private SoldeSessionServiceInterface soldeSessionServiceInterface;
 	private TradingSessionServiceInterface tradingSessionServiceInterface;
+	private SuivieCapitalServiceInterface suivieCapitalServiceInterface;
+	private TurboServiceInterface turboServiceInterface;
 	private Float NormalBuythreshold, NormalSellThreshold, DiffSellThreshold,
 			OverlayBuyThersold;
 
@@ -44,6 +51,10 @@ public class Trading {
 				.getBean("SoldeSession");
 		tradingSessionServiceInterface = (TradingSessionServiceInterface) context
 				.getBean("TradingSession");
+		suivieCapitalServiceInterface = (SuivieCapitalServiceInterface) context
+				.getBean("SuivieCapital");
+		turboServiceInterface = (TurboServiceInterface) context
+				.getBean("Turbo");
 
 	}
 
@@ -56,8 +67,6 @@ public class Trading {
 		PutTp = TpPut;
 		tradingSession = tradingSessionServiceInterface.getById(Call
 				.getTradingSessionIdTradingSession());
-		log.info("Call Turbo Position is : " + CallTp);
-		log.info("Put Turbo Position is : " + PutTp);
 		if (TpCallLast == null
 				|| TpCallLast.getTurboIdTurbo() != TpCall.getTurboIdTurbo()) {
 			TpCallLast = CallTp;
@@ -93,8 +102,11 @@ public class Trading {
 				paramsServiceInterface.getByName("DiffSellThreshold"));
 		OverlayBuyThersold = new Float(
 				paramsServiceInterface.getByName("OverlayBuyThreshold"));
+
 		log.info("Trading Initialized...");
 		savingTurboPositions();
+		TsUpdate();
+		SuivieCapitalUpdate();
 	}
 
 	public void Trade() {
@@ -118,15 +130,46 @@ public class Trading {
 
 	}
 
-	private Integer CalculateNominalStock(TurboPosition position) {
-		Integer Res = new Integer(0);
-		float Liq;
+	private void TsUpdate() {
+		tradingSession.setGlobalBalance(getCapital()
+				- tradingSession.getSoldeInitial());
+		tradingSessionServiceInterface.update(tradingSession);
+
+	}
+
+	private void SuivieCapitalUpdate() {
+		SuivieCapital sc = new SuivieCapital();
+		sc.setMontant(getCapital());
+		sc.setSnapshotTime(new Date());
+		sc.setTradingSessionIdTradingSession(tradingSession
+				.getIdTradingSession());
+		sc.setTurboPositionIdTurboPosition(CallTp.getIdTurboPosition());
+		suivieCapitalServiceInterface.add(sc);
+	}
+
+	private Float getCapital() {
+		Float Cap = new Float(0);
+		Cap = getLiq()
+				+ ((Call.getStock() * CallTp.getAchat()) + (Put.getStock() * PutTp
+						.getAchat()));
+		log.info("Gloabal Balance ==>" + Cap + "€");
+		return Cap;
+	}
+
+	private Float getLiq() {
+		Float Liq;
 		if (soldeSessionServiceInterface.getLast(tradingSession) == null) {
 			Liq = tradingSession.getSoldeInitial();
 		} else {
 			Liq = soldeSessionServiceInterface.getLast(tradingSession)
 					.getSoldeLiquid();
 		}
+		return Liq;
+	}
+
+	private Integer CalculateNominalStock(TurboPosition position) {
+		Integer Res = new Integer(0);
+		Float Liq = getLiq();
 		if (Call.getStock() != 0 || Put.getStock() != 0) {
 			Res = (int) Math.round(Liq * 1 / position.getVente());
 		} else {
@@ -141,14 +184,14 @@ public class Trading {
 
 	private void noTradingWithSold() {
 		if (Call.getStock() != 0) {
-			//askBidService.AddBid(CallTp);
+			// askBidService.AddBid(CallTp);
 			TpCallLast = PutTp;
 			TpCallAchat = null;
 			log.info("");
 		}
 
 		if (Put.getStock() != 0) {
-			//askBidService.AddBid(PutTp);
+			// askBidService.AddBid(PutTp);
 			TpPutLast = PutTp;
 			TpPutAchat = null;
 			log.info("");
@@ -158,8 +201,194 @@ public class Trading {
 	}
 
 	private void normalTrading() {
-		// TODO Auto-generated method stub
+		log.info("Begin Trading...");
+		log.info("Call Turbo Position is : " + CallTp);
+		log.info("Put Turbo Position is : " + PutTp);
+		// WORKIN ON THE CALL
+		log.info("Trading the call turbo position");
+		Float Diff = new Float(0);
+		Diff = Math.abs(CallTp.getAchat() - TpCallLast.getAchat());
+		log.info("L ancienne Turbo position est ==> " + TpCallLast.getAchat()
+				+ " €");
+		log.info("La nouvelle Turbo position est ==> " + CallTp.getAchat()
+				+ " €");
+		log.info("Differance between last and new is ==>" + Diff + " €");
+		if ((CallTp.getAchat() > 0.02) || (PutTp.getAchat() > 0.02)) {
+			if (Diff != 0) {
 
+				if (Call.getStock() == 0) {
+					log.info("Turbo STOCK NULL");
+					if (CallTp.getAchat() < TpCallLast.getAchat()) {
+						log.info("TURBO A LA BAISSE");
+						TpCallLast = CallTp;
+					} else {
+						log.info("TURBO A LA HAUSSE");
+						if (Put.getStock() == 0) {
+							if (Diff >= NormalBuythreshold) {
+								log.info("Commencement Achat du Turbo ==>"
+										+ Call);
+								Integer Qte = CalculateNominalStock(CallTp);
+								Achat(CallTp, Qte);
+								TpCallAchat = CallTp;
+								TpCallLast = CallTp;
+								log.info("Achat Executer de " + Qte
+										+ " du Turbo " + Call);
+							}
+						} else {
+							if (Diff >= OverlayBuyThersold) {
+								log.info("Commencement de achat du Turbo "
+										+ Call);
+								Integer Qte = CalculateNominalStock(CallTp);
+								Achat(CallTp, Qte);
+								TpCallAchat = CallTp;
+								TpCallLast = CallTp;
+								log.info("Achat Executer de " + Qte
+										+ " du Turbo " + Call);
+							}
+						}
+
+					}
+				} else {
+					log.info("Turbo STOCK " + Call.getStock());
+					if ((CallTp.getAchat() < TpCallLast.getAchat())) {
+						log.info("TURBO A LA BAISSE");
+						log.info("La derniere Turbo position Acheté est ==> "
+								+ TpCallAchat);
+						Float DiffCallAchat = TpCallAchat.getVente()
+								- CallTp.getVente();
+						if (((Diff >= NormalSellThreshold) || (DiffCallAchat >= DiffSellThreshold))) {
+							log.info("TURBO A LA BAISSE et commencement de procedure de vente du turbo "
+									+ Call);
+							Vente(CallTp);
+							TpCallLast = CallTp;
+							TpCallAchat = null;
+							log.info("Vente Executer de " + Call.getStock()
+									+ " du Turbo " + Call);
+						}
+					} else {
+						TpCallLast = CallTp;
+						log.info("TURBO A LA Hausse");
+					}
+
+				}
+			}
+		}
+
+		// WORKIN ON THE PUT
+		log.info("Trading the Put turbo position");
+		Float DiffPut = new Float(0);
+		DiffPut = Math.abs(PutTp.getAchat() - TpPutLast.getAchat());
+		log.info("L'ancienne Turbo position est ==> " + TpPutLast.getAchat());
+		log.info("La nouvelle Turbo position est ==> " + PutTp.getAchat());
+		log.info("DiffPuterance between last and new is ==>" + DiffPut);
+
+		if ((PutTp.getAchat() > 0.02) || (PutTp.getAchat() > 0.02)) {
+			if (DiffPut != 0) {
+
+				if (Put.getStock() == 0) {
+					log.info("Turbo STOCK NULL");
+					if (PutTp.getAchat() < TpPutLast.getAchat()) {
+						log.info("TURBO A LA BAISSE");
+						TpPutLast = PutTp;
+					} else {
+						log.info("TURBO A LA HAUSSE");
+						if (Call.getStock() == 0) {
+							if (DiffPut >= NormalBuythreshold) {
+								log.info("Commencement de l'achat du Turbo "
+										+ Put);
+								Integer Qte = CalculateNominalStock(PutTp);
+								Achat(PutTp, Qte);
+								TpPutAchat = PutTp;
+								TpPutLast = PutTp;
+								log.info("Achat Executer de " + Qte
+										+ " du Turbo " + Put);
+							}
+						} else {
+							if (DiffPut >= OverlayBuyThersold) {
+								log.info("Commencement de l'achat du Turbo "
+										+ Put);
+								Integer Qte = CalculateNominalStock(PutTp);
+								Achat(PutTp, Qte);
+								TpPutAchat = PutTp;
+								TpPutLast = PutTp;
+								log.info("Achat Executer de " + Qte
+										+ " du Turbo " + Put);
+							}
+						}
+
+					}
+				} else {
+					log.info("Turbo STOCK " + Put.getStock());
+					if ((PutTp.getAchat() < TpPutLast.getAchat())) {
+						log.info("TURBO A LA BAISSE");
+						log.info("La derniere Turbo position Acheté est ==> "
+								+ TpPutAchat);
+						Float DiffPutPutAchat = TpPutAchat.getVente()
+								- PutTp.getVente();
+						if (((DiffPut >= NormalSellThreshold) || (DiffPutPutAchat >= DiffSellThreshold))) {
+							log.info("TURBO A LA BAISSE et commencement de procedure de vente du turbo "
+									+ Put);
+							Vente(PutTp);
+							TpPutLast = PutTp;
+							TpPutAchat = null;
+							log.info("Vente Executer de " + Put.getStock()
+									+ " du Turbo " + Put);
+						}
+					} else {
+						TpPutLast = PutTp;
+						log.info("TURBO A LA Hausse");
+					}
+
+				}
+			}
+		}
+
+	}
+
+	private void Achat(TurboPosition turboPosition, Integer Qte) {
+		AskBid ab = new AskBid();
+		ab.setAskOrBid("Achat");
+		ab.setMontantGlobal(turboPosition.getVente() * Qte);
+		ab.setPrixUnitaire(turboPosition.getVente());
+		ab.setQte(Qte);
+		ab.setTradingSessionIdTradingSession(tradingSession
+				.getIdTradingSession());
+		ab.setTransDate(new Date());
+		ab.setTurboIdTurbo(turboPosition.getTurboIdTurbo());
+		ab.setTurboPositionIdTurboPosition(turboPosition.getIdTurboPosition());
+		askBidServiceInterface.add(ab);
+		SoldeSession ss = new SoldeSession();
+		ss.setAskBidIdAskBid(ab.getIdAskBid());
+		ss.setTimeSnapshot(new Date());
+		ss.setTradingSessionIdTradingSession(tradingSession
+				.getIdTradingSession());
+		Float ll = getLiq() - (Qte * turboPosition.getVente());
+		ss.setSoldeLiquid(ll);
+		soldeSessionServiceInterface.add(ss);
+	}
+
+	private void Vente(TurboPosition turboPosition) {
+		Turbo turbo = turboServiceInterface.getById(turboPosition
+				.getTurboIdTurbo());
+		AskBid ab = new AskBid();
+		ab.setAskOrBid("Vente");
+		ab.setMontantGlobal(turboPosition.getAchat() * turbo.getStock());
+		ab.setPrixUnitaire(turboPosition.getAchat());
+		ab.setQte(turbo.getStock());
+		ab.setTradingSessionIdTradingSession(tradingSession
+				.getIdTradingSession());
+		ab.setTransDate(new Date());
+		ab.setTurboIdTurbo(turboPosition.getTurboIdTurbo());
+		ab.setTurboPositionIdTurboPosition(turboPosition.getIdTurboPosition());
+		askBidServiceInterface.add(ab);
+		SoldeSession ss = new SoldeSession();
+		ss.setAskBidIdAskBid(ab.getIdAskBid());
+		ss.setTimeSnapshot(new Date());
+		ss.setTradingSessionIdTradingSession(tradingSession
+				.getIdTradingSession());
+		Float ll = getLiq() - (turbo.getStock() * turboPosition.getAchat());
+		ss.setSoldeLiquid(ll);
+		soldeSessionServiceInterface.add(ss);
 	}
 
 	private void savingTurboPositions() {

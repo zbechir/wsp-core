@@ -85,4 +85,9 @@ public class TurboServiceImplements implements TurboServiceInterface {
 		dao.desactivate(turbo);		
 	}
 
+	@Override
+	public Turbo getById(Integer Id) {
+		return dao.getById(Id);
+	}
+
 }

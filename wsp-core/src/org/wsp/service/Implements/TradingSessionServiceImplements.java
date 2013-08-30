@@ -39,4 +39,9 @@ public class TradingSessionServiceImplements implements
 		return dao.getById(Id);
 	}
 
+	@Override
+	public void update(TradingSession tradingSession) {
+		dao.update(tradingSession);
+	}
+
 }
