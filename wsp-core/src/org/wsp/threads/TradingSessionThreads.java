@@ -20,7 +20,6 @@ public class TradingSessionThreads implements Runnable {
 			.getLogger(TradingSessionThreads.class);
 	private ApplicationContext context;
 	private Boolean stop = false;
-	private TradingSession tradingSession;
 	private Pool pool;
 	private TurboServiceInterface turboServiceInterface;
 	private Trading trading;
@@ -29,7 +28,6 @@ public class TradingSessionThreads implements Runnable {
 			TradingSession tradingSession) {
 		super();
 		this.context = context;
-		this.tradingSession = tradingSession;
 		pool = new Pool(tradingSession, context);
 		turboServiceInterface = (TurboServiceInterface) context
 				.getBean("Turbo");

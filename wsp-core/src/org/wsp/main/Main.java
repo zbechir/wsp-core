@@ -12,9 +12,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.wsp.threads.MainThread;
 import org.wsp.threads.TurboRefrech;
 
-public class TCPServer {
+public class Main {
 
-	private static final Logger log = Logger.getLogger(TCPServer.class);
+	private static final Logger log = Logger.getLogger(Main.class);
 
 	static String hostInetAddressString;
 	static String clientInetAddressString;

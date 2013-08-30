@@ -5,10 +5,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
-import org.wsp.main.TCPServer;
 import org.wsp.models.TradingSession;
 import org.wsp.service.Interfaces.TradingSessionServiceInterface;
-import org.wsp.service.Interfaces.TurboServiceInterface;
 
 public class MainThread implements Runnable {
 
