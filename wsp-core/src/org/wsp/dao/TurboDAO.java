@@ -66,6 +66,7 @@ public class TurboDAO {
 
 	public void update(Turbo turbo) {
 		sessionFactory.getCurrentSession().update(turbo);
+		sessionFactory.getCurrentSession().flush();
 	}
 
 	public void del(Turbo turbo) {

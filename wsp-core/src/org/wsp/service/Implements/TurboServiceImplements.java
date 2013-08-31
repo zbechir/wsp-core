@@ -90,4 +90,10 @@ public class TurboServiceImplements implements TurboServiceInterface {
 		return dao.getById(Id);
 	}
 
+	@Override
+	public void update(Turbo turbo) {
+		dao.update(turbo);
+		
+	}
+
 }

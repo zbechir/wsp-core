@@ -15,4 +15,5 @@ public interface TurboServiceInterface {
 	public void init(Turbo turbo);
 	public void desactivate(Turbo turbo);
 	public Turbo getById(Integer Id);
+	public void update (Turbo turbo);
 }

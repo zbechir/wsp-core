@@ -2,6 +2,8 @@ package org.wsp.TradingLogic;
 
 import java.util.Date;
 
+import javax.swing.text.Position;
+
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.wsp.models.AskBid;
@@ -278,7 +280,7 @@ public class Trading {
 		log.info("Trading the Put turbo position");
 		Float DiffPut = new Float(0);
 		DiffPut = Math.abs(PutTp.getAchat() - TpPutLast.getAchat());
-		log.info("L'ancienne Turbo position est ==> " + TpPutLast.getAchat());
+		log.info("Lancienne Turbo position est ==> " + TpPutLast.getAchat());
 		log.info("La nouvelle Turbo position est ==> " + PutTp.getAchat());
 		log.info("DiffPuterance between last and new is ==>" + DiffPut);
 
@@ -346,6 +348,9 @@ public class Trading {
 	}
 
 	private void Achat(TurboPosition turboPosition, Integer Qte) {
+		Turbo turbo=turboServiceInterface.getById(turboPosition.getTurboIdTurbo());
+		turbo.setStock(Qte);
+		turboServiceInterface.update(turbo);
 		AskBid ab = new AskBid();
 		ab.setAskOrBid("Achat");
 		ab.setMontantGlobal(turboPosition.getVente() * Qte);
@@ -368,8 +373,7 @@ public class Trading {
 	}
 
 	private void Vente(TurboPosition turboPosition) {
-		Turbo turbo = turboServiceInterface.getById(turboPosition
-				.getTurboIdTurbo());
+		Turbo turbo=turboServiceInterface.getById(turboPosition.getTurboIdTurbo());
 		AskBid ab = new AskBid();
 		ab.setAskOrBid("Vente");
 		ab.setMontantGlobal(turboPosition.getAchat() * turbo.getStock());
@@ -389,6 +393,8 @@ public class Trading {
 		Float ll = getLiq() - (turbo.getStock() * turboPosition.getAchat());
 		ss.setSoldeLiquid(ll);
 		soldeSessionServiceInterface.add(ss);
+		turbo.setStock(0);
+		turboServiceInterface.update(turbo);
 	}
 
 	private void savingTurboPositions() {

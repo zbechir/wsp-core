@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. --><project basedir="." default="build" name="wsp-core">
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="../../../eclipse"/>
+    <property name="junit.output.dir" value="junit"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.7"/>
+    <property name="source" value="1.7"/>
+    <path id="Maven Dependencies.libraryclasspath">
+        <pathelement location="../../../.m2/repository/mysql/mysql-connector-java/5.1.26/mysql-connector-java-5.1.26.jar"/>
+        <pathelement location="../../../.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17.jar"/>
+        <pathelement location="../../../.m2/repository/org/htmlparser/htmlparser/1.6/htmlparser-1.6.jar"/>
+        <pathelement location="../../../.m2/repository/org/hibernate/hibernate-c3p0/4.1.6.Final/hibernate-c3p0-4.1.6.Final.jar"/>
+        <pathelement location="../../../.m2/repository/org/jboss/logging/jboss-logging/3.1.0.GA/jboss-logging-3.1.0.GA.jar"/>
+        <pathelement location="../../../.m2/repository/org/hibernate/hibernate-core/4.1.6.Final/hibernate-core-4.1.6.Final.jar"/>
+        <pathelement location="../../../.m2/repository/antlr/antlr/2.7.7/antlr-2.7.7.jar"/>
+        <pathelement location="../../../.m2/repository/org/jboss/spec/javax/transaction/jboss-transaction-api_1.1_spec/1.0.0.Final/jboss-transaction-api_1.1_spec-1.0.0.Final.jar"/>
+        <pathelement location="../../../.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar"/>
+        <pathelement location="../../../.m2/repository/org/hibernate/javax/persistence/hibernate-jpa-2.0-api/1.0.1.Final/hibernate-jpa-2.0-api-1.0.1.Final.jar"/>
+        <pathelement location="../../../.m2/repository/org/javassist/javassist/3.15.0-GA/javassist-3.15.0-GA.jar"/>
+        <pathelement location="../../../.m2/repository/org/hibernate/common/hibernate-commons-annotations/4.0.1.Final/hibernate-commons-annotations-4.0.1.Final.jar"/>
+        <pathelement location="../../../.m2/repository/c3p0/c3p0/0.9.1/c3p0-0.9.1.jar"/>
+        <pathelement location="../../../.m2/repository/org/springframework/spring-aop/3.2.4.RELEASE/spring-aop-3.2.4.RELEASE.jar"/>
+        <pathelement location="../../../.m2/repository/aopalliance/aopalliance/1.0/aopalliance-1.0.jar"/>
+        <pathelement location="../../../.m2/repository/org/springframework/spring-beans/3.2.4.RELEASE/spring-beans-3.2.4.RELEASE.jar"/>
+        <pathelement location="../../../.m2/repository/org/springframework/spring-context/3.2.4.RELEASE/spring-context-3.2.4.RELEASE.jar"/>
+        <pathelement location="../../../.m2/repository/org/springframework/spring-core/3.2.4.RELEASE/spring-core-3.2.4.RELEASE.jar"/>
+        <pathelement location="../../../.m2/repository/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar"/>
+        <pathelement location="../../../.m2/repository/org/springframework/spring-expression/3.2.4.RELEASE/spring-expression-3.2.4.RELEASE.jar"/>
+        <pathelement location="../../../.m2/repository/org/springframework/spring-jdbc/3.2.4.RELEASE/spring-jdbc-3.2.4.RELEASE.jar"/>
+        <pathelement location="../../../.m2/repository/org/springframework/spring-tx/3.2.4.RELEASE/spring-tx-3.2.4.RELEASE.jar"/>
+        <pathelement location="../../../.m2/repository/org/springframework/spring-orm/3.2.4.RELEASE/spring-orm-3.2.4.RELEASE.jar"/>
+        <pathelement location="../../../.m2/repository/org/springframework/spring-test/3.2.4.RELEASE/spring-test-3.2.4.RELEASE.jar"/>
+    </path>
+    <path id="JUnit 4.libraryclasspath">
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.junit_4.11.0.v201303080030/junit.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.hamcrest.core_1.3.0.v201303031735.jar"/>
+    </path>
+    <path id="wsp-core.classpath">
+        <pathelement location="target/classes"/>
+        <pathelement location="target/test-classes"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+        <path refid="JUnit 4.libraryclasspath"/>
+    </path>
+    <path id="run.ParamsServiceTest.classpath">
+        <path refid="wsp-core.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.Main.classpath">
+        <path refid="wsp-core.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <target name="init">
+        <mkdir dir="target/classes"/>
+        <mkdir dir="target/test-classes"/>
+        <copy includeemptydirs="false" todir="target/classes">
+            <fileset dir="src">
+                <include name="**/*.java"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="target/test-classes">
+            <fileset dir="test">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="target/classes"/>
+        <delete dir="target/test-classes"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="target/classes" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <include name="**/*.java"/>
+            <classpath refid="wsp-core.classpath"/>
+        </javac>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="target/test-classes" includeantruntime="false" source="${source}" target="${target}">
+            <src path="test"/>
+            <classpath refid="wsp-core.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+    <target name="ParamsServiceTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="org.wsp.services.ParamsServiceTest" todir="${junit.output.dir}"/>
+            <classpath refid="run.ParamsServiceTest.classpath"/>
+        </junit>
+    </target>
+    <target name="Main">
+        <java classname="org.wsp.main.Main" failonerror="true" fork="yes">
+            <classpath refid="run.Main.classpath"/>
+        </java>
+    </target>
+    <target name="junitreport">
+        <junitreport todir="${junit.output.dir}">
+            <fileset dir="${junit.output.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${junit.output.dir}"/>
+        </junitreport>
+    </target>
+</project>
