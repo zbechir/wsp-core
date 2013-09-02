@@ -154,6 +154,9 @@ public class Trading {
 		Cap = getLiq()
 				+ ((Call.getStock() * CallTp.getAchat()) + (Put.getStock() * PutTp
 						.getAchat()));
+		log.debug("Liquiditée : "+getLiq());
+		log.debug("Call Value : "+Call.getStock() * CallTp.getAchat());
+		log.debug("Put Value : "+Put.getStock() * PutTp.getAchat());
 		log.info("Gloabal Balance ==>" + Cap + "€");
 		return Cap;
 	}
@@ -186,7 +189,7 @@ public class Trading {
 
 	private void noTradingWithSold() {
 		if (Call.getStock() != 0) {
-			// askBidService.AddBid(CallTp);
+			Vente(CallTp);
 			TpCallLast = PutTp;
 			TpCallAchat = null;
 			log.info("");
@@ -194,6 +197,7 @@ public class Trading {
 
 		if (Put.getStock() != 0) {
 			// askBidService.AddBid(PutTp);
+			Vente(PutTp);
 			TpPutLast = PutTp;
 			TpPutAchat = null;
 			log.info("");
@@ -296,7 +300,7 @@ public class Trading {
 						log.info("TURBO A LA HAUSSE");
 						if (Call.getStock() == 0) {
 							if (DiffPut >= NormalBuythreshold) {
-								log.info("Commencement de l'achat du Turbo "
+								log.info("Commencement de l achat du Turbo "
 										+ Put);
 								Integer Qte = CalculateNominalStock(PutTp);
 								Achat(PutTp, Qte);
@@ -307,7 +311,7 @@ public class Trading {
 							}
 						} else {
 							if (DiffPut >= OverlayBuyThersold) {
-								log.info("Commencement de l'achat du Turbo "
+								log.info("Commencement de l achat du Turbo "
 										+ Put);
 								Integer Qte = CalculateNominalStock(PutTp);
 								Achat(PutTp, Qte);
@@ -390,7 +394,7 @@ public class Trading {
 		ss.setTimeSnapshot(new Date());
 		ss.setTradingSessionIdTradingSession(tradingSession
 				.getIdTradingSession());
-		Float ll = getLiq() - (turbo.getStock() * turboPosition.getAchat());
+		Float ll = getLiq() + (turbo.getStock() * turboPosition.getAchat());
 		ss.setSoldeLiquid(ll);
 		soldeSessionServiceInterface.add(ss);
 		turbo.setStock(0);

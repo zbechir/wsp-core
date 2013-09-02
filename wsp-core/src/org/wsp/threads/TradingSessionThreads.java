@@ -71,10 +71,11 @@ public class TradingSessionThreads implements Runnable {
 								if (CallTp != null && PutTp != null) {
 									trading.init(Call, Put, CallTp, PutTp);
 									trading.Trade();
-								}else{
-									log.error("Problem in parsing Turbos");
+								} else {
+									log.error("Problem in parsing Turbos, Updating the pool");
+									// pool.update();
 								}
-								//Thread.sleep(1000 * 15 * 1);
+								// Thread.sleep(1000 * 15 * 1);
 							} else {
 								SimpleDateFormat Sdf = new SimpleDateFormat(
 										"HH:mm:ss");
@@ -87,8 +88,9 @@ public class TradingSessionThreads implements Runnable {
 						}
 					} else {
 						log.info("Call or Put Turbo is null trying to update them.");
-						pool.update();
+						// pool.update();
 					}
+					pool.update();
 				}
 
 			}
@@ -96,8 +98,10 @@ public class TradingSessionThreads implements Runnable {
 			log.error(e.getMessage(), e);
 		} finally {
 			if (Call != null && Put != null) {
+				log.info("Initialize the Turbos...");
 				turboServiceInterface.init(Call);
 				turboServiceInterface.init(Put);
+				log.info("Turbos Intialized...");
 			}
 		}
 	}

@@ -16,14 +16,12 @@ import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.wsp.models.Turbo;
 import org.wsp.models.TurboPosition;
-import org.wsp.service.Interfaces.TurboPositionServiceInterface;
 import org.wsp.service.Interfaces.TurboServiceInterface;
 
 public class HtmlParser {
 	private static final Logger log = Logger.getLogger(HtmlParser.class);
 	private String Url;
 	private Turbo turbo;
-	private ApplicationContext context;
 	private TurboServiceInterface turboServiceInterface;
 
 	public HtmlParser(String url) {
@@ -39,7 +37,6 @@ public class HtmlParser {
 		super();
 		Url = turbo.getUrl();
 		this.turbo = turbo;
-		this.context = context;
 		turboServiceInterface = (TurboServiceInterface) context
 				.getBean("Turbo");
 	}
@@ -50,8 +47,6 @@ public class HtmlParser {
 		int Size = 0;
 		String[] htmls = null;
 		List<String> HtmlEx = new ArrayList<String>();
-		int loop = 0;
-
 		StringExtractor se = new StringExtractor(Url);
 		String html;
 		html = se.extractStrings(false);
@@ -91,6 +86,19 @@ public class HtmlParser {
 					Index = new Float(tmp[7] + tmp[8]);
 				} catch (NumberFormatException e) {
 					Index = new Float(tmp[8] + tmp[9]);
+				}
+			}
+			if(Index!=0 && turbo.getTypeTurbo().equals("Turbo Call")){
+				if(turbo.getBarDes()>=Index){
+					turboServiceInterface.desactivate(turbo);
+					return null;
+				}
+			}else{
+				if(Index!=0 && turbo.getTypeTurbo().equals("Turbo Put")){
+					if(turbo.getBarDes()<=Index){
+						turboServiceInterface.desactivate(turbo);
+						return null;
+					}
 				}
 			}
 			Integer Qte = 0;
