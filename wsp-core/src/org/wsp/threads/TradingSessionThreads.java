@@ -11,6 +11,7 @@ import org.wsp.models.TradingSession;
 import org.wsp.models.Turbo;
 import org.wsp.models.TurboPosition;
 import org.wsp.parser.HtmlParser;
+import org.wsp.service.Interfaces.ParamsServiceInterface;
 import org.wsp.service.Interfaces.TurboServiceInterface;
 import org.wsp.utils.Pool;
 
@@ -22,6 +23,7 @@ public class TradingSessionThreads implements Runnable {
 	private Boolean stop = false;
 	private Pool pool;
 	private TurboServiceInterface turboServiceInterface;
+	private ParamsServiceInterface paramsServiceInterface;
 	private Trading trading;
 
 	public TradingSessionThreads(ApplicationContext context,
@@ -31,6 +33,8 @@ public class TradingSessionThreads implements Runnable {
 		pool = new Pool(tradingSession, context);
 		turboServiceInterface = (TurboServiceInterface) context
 				.getBean("Turbo");
+		paramsServiceInterface = (ParamsServiceInterface) context
+				.getBean("Params");
 		trading = new Trading(context);
 	}
 
@@ -43,12 +47,22 @@ public class TradingSessionThreads implements Runnable {
 				if (pool != null) {
 					Call = pool.getCall();
 					Put = pool.getPut();
+					boolean DecHor=false;
+					if(paramsServiceInterface.getByName("DecalageHorraire").equalsIgnoreCase("yes")){
+						DecHor=true;
+					}
 					if (Call != null && Put != null) {
 						Calendar Now = Calendar.getInstance();
 						Calendar Time = Calendar.getInstance();
 						Time.clear();
-						Time.set(Calendar.HOUR_OF_DAY,
-								Now.get(Calendar.HOUR_OF_DAY));
+						if(DecHor){
+							Time.set(Calendar.HOUR_OF_DAY,
+									Now.get(Calendar.HOUR_OF_DAY)+1);
+						}else{
+							Time.set(Calendar.HOUR_OF_DAY,
+									Now.get(Calendar.HOUR_OF_DAY));	
+						}
+						
 						Time.set(Calendar.MINUTE, Now.get(Calendar.MINUTE));
 						Date date = Time.getTime();
 						// log.info(date);

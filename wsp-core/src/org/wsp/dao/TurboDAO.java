@@ -70,11 +70,12 @@ public class TurboDAO {
 	}
 
 	public void del(Turbo turbo) {
-		sessionFactory.getCurrentSession().delete(turbo);
+		turbo.setState(0);
+		sessionFactory.getCurrentSession().update(turbo);
 	}
 
 	public void desactivate(Turbo turbo) {
-		turbo.setState(0);
+		turbo.setState(99);
 		sessionFactory.getCurrentSession().update(turbo);
 	}
 

@@ -261,7 +261,7 @@ public class HtmlParser {
 			DataOutputStream wr = new DataOutputStream(c.getOutputStream());
 			String query = "parameters[sort]="
 					+ sort
-					+ "&parameters[nbLines]=50&parameters[ssjacentSymbol]=false&parameters[type_derive]=C&parameters[risque]=false&parameters[turbo]=true&parameters[page]=1&parameters[do_search]=1&parameters[type]="
+					+ "&parameters[nbLines]=200&parameters[ssjacentSymbol]=false&parameters[type_derive]=C&parameters[risque]=false&parameters[turbo]=true&parameters[page]=1&parameters[do_search]=1&parameters[type]="
 					+ type
 					+ "&parameters[type_ssjacent]=Indices&parameters[ssjacent]=CAC%252040&parameters[emetteur]=&parameters[status][active]=active&parameters[ssjacent-part]=&parameters[strategie]=&parameters[eligibilite]=CATS&customizing=true&id=b82e2031&config[id]=b82e2031&config[fieldsLast][0][0]=type&config[newFields][0]=type&class=Boursorama_Block_Bourse_Derives_Search_Turbos";
 			wr.writeBytes(query);
