@@ -5,7 +5,7 @@
  <session-factory>
   <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
   <property name="hibernate.connection.password">86GAptWjnBQqGdw7</property>
-  <property name="hibernate.connection.url">jdbc:mysql://wspdevdb:3306/wsp</property>
+  <property name="hibernate.connection.url">jdbc:mysql://wspdbvip:3306/wsp</property>
   <property name="hibernate.connection.username">wsp</property>
   <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
   <property name="hibernate.connection.autocommit">true</property>

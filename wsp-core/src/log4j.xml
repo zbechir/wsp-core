@@ -10,7 +10,7 @@
 	</appender>
 	<appender name="DB" class="org.apache.log4j.jdbc.JDBCAppender">
 		<param name="Threshold" value="info" />
-		<param name="URL" value="jdbc:mysql://wspdevdb/wsp_logs" />
+		<param name="URL" value="jdbc:mysql://wspdbvip/wsp_logs" />
 		<param name="Driver" value="com.mysql.jdbc.Driver" />
 		<param name="User" value="wsp" />
 		<param name="Password" value="86GAptWjnBQqGdw7" />
@@ -39,15 +39,33 @@
 		</layout>
 	</appender>
 	
+	<appender name="syslog" class="org.apache.log4j.net.SyslogAppender">
+		<param name="Facility" value="USER" />
+		<param name="SyslogHost" value="wspadmadmin" />
+		<param name="Threshold" value="INFO" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="wsp-core %d{MMM dd HH:mm:ss} %-5p %C %m%n" />
+		</layout>
+	</appender>
+	
+	<appender name="syslog-application" class="org.apache.log4j.net.SyslogAppender">
+		<param name="Facility" value="USER" />
+		<param name="SyslogHost" value="wspadmadmin" />
+		<param name="Threshold" value="INFO" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="wsp-application %d{MMM dd HH:mm:ss} %-5p %C %m%n" />
+		</layout>
+	</appender>
+	
 	<logger name="org.wsp">
 		<level value="ALL" />
-		<appender-ref ref="Application" />
+		<appender-ref ref="syslog-application" />
 	</logger>
 
 	<root>
 		<priority value="all" />
-		<appender-ref ref="console" />
-		<appender-ref ref="Output" />
+		<appender-ref ref="syslog" />
+	<!-- <appender-ref ref="Output" /> -->	
 		<appender-ref ref="DB" />
 	</root>
 
